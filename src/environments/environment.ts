@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apikey: 'bc79e6bdd02b4bf9bebccd7b4e58d193',
+  apiUrl: 'https://newsapi.org/v2',
 };
 
 /*
