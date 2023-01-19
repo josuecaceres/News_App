@@ -17,11 +17,54 @@ export class NewsService {
 
   constructor(private _http:HttpClient) { }
 
+  private executeQuery<T>( endpoint: string ) {
+    console.log('Petición HTTP realizada');
+    return this._http.get<T>(`${ apiUrl }${ endpoint }`, {
+      params: {
+        apiKey: apikey,
+        country: 'us'
+      }
+    })
+  }
+
   getTopHeadlines() :Observable<Article[]>{
-    return this._http.get<NewsResponse>(`https://newsapi.org/v2/top-headlines?country=us&category=technology`, {
-      params: {apikey: apikey}
-    }).pipe(
-      map( ({ articles }) => articles)
-    )
+    return this.getTopHeadlinesByCategory('general');
+  }
+
+  getTopHeadlinesByCategory(category:string, loadMore:boolean = false):Observable<Article[]>{
+    if(loadMore){
+      return this.getArticlesByCategiry(category)
+    }
+
+    if(this.articlesByCategoryAndPage[category]){
+      return of(this.articlesByCategoryAndPage[category].articles)
+    }
+
+    return this.getArticlesByCategiry(category)
+  }
+
+  private getArticlesByCategiry(category:string):Observable<Article[]>{
+    if(!Object.keys(this.articlesByCategoryAndPage).includes(category)){
+      this.articlesByCategoryAndPage[category] = {
+        page: 0,
+        articles: []
+      }
+    }
+
+    const page = this.articlesByCategoryAndPage[category].page + 1
+
+    return this.executeQuery<NewsResponse>(`/top-headlines?category=${ category }&page=${ page }`)
+      .pipe(
+        map(({articles}) => {
+          if ( articles.length === 0 ) return this.articlesByCategoryAndPage[category].articles;
+
+          this.articlesByCategoryAndPage[category] = {
+            page: page,
+            articles: [ ...this.articlesByCategoryAndPage[category].articles, ...articles ]
+          }
+
+          return this.articlesByCategoryAndPage[category].articles
+        })
+      )
   }
 }
