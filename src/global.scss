@@ -28,3 +28,8 @@
 .text-primary{
   color: var(--ion-color-primary);
 }
+
+.md .tabs-bottom {
+  transform: translateY(-56px) !important;
+  text-align: center !important;
+}

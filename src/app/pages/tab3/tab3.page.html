@@ -14,6 +14,11 @@
   </ion-header>
 
   <app-articles
+    *ngIf="articles.length > 0"
     [articles]="articles"
   ></app-articles>
+
+  <div id="nada" *ngIf="articles.length == 0">
+    <ion-label color="dark">No hay favoritos.</ion-label>
+  </div>
 </ion-content>

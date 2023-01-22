@@ -12,5 +12,5 @@ export class Tab3Page {
     return this.storageServ.getLocalArticles
   }
 
-  constructor(private storageServ:StorageService) {}
+  constructor(public storageServ:StorageService) {}
 }

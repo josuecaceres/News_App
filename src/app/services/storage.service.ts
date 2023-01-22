@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { ToastController } from '@ionic/angular';
 import { Storage } from '@ionic/storage-angular';
 import { Article } from '../interfaces';
 
@@ -13,7 +14,7 @@ export class StorageService {
     return [ ...this._localArticles ]
   }
 
-  constructor(private storage: Storage) {
+  constructor(private storage: Storage, public toastController: ToastController,) {
     this.init()
   }
 
@@ -27,8 +28,10 @@ export class StorageService {
     const exists = this._localArticles.find(localArticle => localArticle.title === article.title);
     if (exists) {
       this._localArticles = this._localArticles.filter(localArticle => localArticle.title !== article.title);
+      this.presentToast('Eliminado de favoritos.')
     } else {
       this._localArticles = [article, ...this._localArticles];
+      this.presentToast('Agragado a favoritos.')
     }
     this._storage.set('articles', this._localArticles);
   }
@@ -45,4 +48,16 @@ export class StorageService {
   articleInFavorites( article: Article ) {
     return !!this._localArticles.find( localArticle => localArticle.title === article.title );
   }
+
+  async presentToast(msg: string) {
+		const toast = await this.toastController.create({
+			message: msg,
+      duration: 2000,
+			position: "bottom",
+			cssClass: "tabs-bottom",
+			mode: 'md'
+		});
+		toast.present();
+	}
+
 }
